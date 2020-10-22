@@ -1,0 +1,18 @@
+# Version apps/v1 supports Deployment object type
+apiVersion : v1
+# Object type is Service and CLusterIP is subtype
+kind : Service
+# Naming this object
+metadata : 
+  name : client-cluster-ip-service
+# Spec for this object : 
+spec : 
+  type : ClusterIP
+# Selector is to tell which object will use this Netwrok Service  
+  selector : 
+    component : web
+# Port is used by other objects to coomunicate
+# targetPort is same as the port used in client-deployment (deployment object type)
+  ports : 
+    - port : 3000
+      targetPort : 3000

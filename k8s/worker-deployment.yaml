@@ -1,0 +1,27 @@
+apiVersion : apps/v1
+kind : Deployment
+metadata : 
+  name : worker-deployment
+spec : 
+  replicas : 1
+  selector : 
+    matchLabels : 
+      componenet : worker
+  template : 
+    metadata : 
+      labels : 
+        componenet : worker
+    spec : 
+      containers : 
+        - name : worker
+          image : aishwaryaarun/multi-worker
+          # Define Environment Variables   
+          # Wroker Pod needs below two variables to connect with Redis 
+          # Redis Host value is the name of the clusterIp attached to Redis      
+          # Redis Port is the port defined in the ClusterIP.
+          env : 
+            - name : REDIS_HOST
+              value : redis-custer-ip-service
+            - name : REDIST_PORT
+              value : '6379'
+              

@@ -1,0 +1,30 @@
+# Version apps/v1 supports Deployment object type
+apiVersion : apps/v1
+kind : Deployment 
+# Each config file will be given handle to get referenced.
+# Basically metadata is Naamakaran for every object
+metadata : 
+  name : client-deployment
+# Every config file will have Spec (properties) which will tell the master what
+# all spec you are looking for , here we need 3 replacs of multi-client 
+# This Spec is for Deployment config file
+spec : 
+  replicas : 3
+  selector : 
+    matchLabels : 
+      component : web
+# As you know every deployment will have Pods and each Pod is defined under a 
+# template      
+  template : 
+    metadata : 
+      labels : 
+        component : web
+# As you know every deployment will have Pods and each Pod is defined under a 
+# template     
+# This Spec is for Pod creation (nested Spec )      
+    spec : 
+      containers : 
+        - name : client
+          image : aishwaryaarun/multi-client
+          ports : 
+            - containerPort : 3000

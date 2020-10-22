@@ -1,0 +1,44 @@
+apiVersion : apps/v1
+kind : Deployment
+metadata : 
+  name : postgres-deployment
+spec : 
+  replicas : 1
+  selector : 
+    matchLabels : 
+        component : postgres
+  template : 
+    metadata : 
+      labels : 
+        component : postgres
+    spec : 
+    # Designating a PVC inside a POD
+      # Here in Volume section, Pod is requesteing K8S to allot PVC for long term storage
+      volumes : 
+        - name : postgres-storage
+          persistentVolumeClaim : 
+            claimName : database-persistent-volume-claim
+      # Once the above storage/volume is available for Pod, assign it to the containers
+      # so that postgres can save the data into it          
+      containers : 
+        - name : postgres
+          image : postgres
+          ports : 
+            - containerPort : 5432
+          # name should match with the name of volumes section 
+          # mountPath: anythig progress will store at this path will be stored in the PVC
+          # subPath : Its nothing but the folder name in which the data will be saved in 
+          # PVC, so if you go to the persisten volume you will find a Postgres folder
+          # which hold the data of mountPath folder      
+          volumeMounts : 
+            - name : postgres-storage
+              mountPath : /var/lib/postgresql/data
+              subPath : postgres
+          # Here we are ovriding the Password which we have used in the postres image with 
+          # secret's password (pgpassword) 
+          env : 
+            - name : POSTGRES_PASSWORD
+              valueFrom : 
+                secretKeyRef : 
+                  name : pgpassword 
+                  key : PGPASSWORD

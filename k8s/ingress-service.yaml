@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1beta1
+kind : Ingress
+metadata : 
+  name : ingress-service
+  # Annotations are additioncal configuration options
+  annotations :
+    # This config rule is basically telling kubernetes to create ingress controller
+    # based on the nginx project
+    kubernetes.io/ingress.class : nginx
+     # This config rule is basically tells how nginx should behave
+     # Once the re-route rule suuggest to go for /api path (checkthe main requirement)
+     # this rule will rewrite (replace the /api before sending it to the server).    
+    nginx.ingress.kuubernetes.io/rewrite-target : /$1
+    # ingress-nginx handles regexes is causing 404 errors both locally and on Google Cloud.
+    # To resolve this we need to add a new line to the config
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+# Create routing rules, one is for path '/' and another one for '/api/'
+# If the incoming traffic has path starting with '/' other than '/api/' then route it to client clusterIP
+# If the incoming traffic has path starting with '/api/' then route it to server clusterIP    
+spec : 
+  rules :
+    - http :
+        paths :
+          - path : /?(.*)
+            backend :
+              serviceName : client-cluster-ip-service
+              servicePort : 3000
+          - path : /api/?(.*)
+            backend :
+              serviceName : server-cluster-ip-service
+              servicePort : 5000
+
